@@ -2,10 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import Header from './components/Header';
-import Tacos from './components/Tacos';
-import Meals from './components/Meals';
-import Footer from './components/Footer';
+import Header from './Components/Header';
+import Tacos from './Components/Tacos';
+import Meals from './Components/Meals';
+import Footer from './Components/Footer';
 
 function App() {
   const [tacos, setTacos] = useState([]);
