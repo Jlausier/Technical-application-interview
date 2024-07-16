@@ -1,28 +1,24 @@
-# backend/myapp/views.py
 
 from django.http import JsonResponse
 import requests
 
-def get_random_taco():
+def get_random_drink(request):
     try:
-        url = 'http://taco-randomizer.herokuapp.com/random/'
+        url = 'https://www.thecocktaildb.com/api/json/v1/1/random.php'
         response = requests.get(url)
         response.raise_for_status()
-        taco_data = response.json()
-        return taco_data
+        drink_data = response.json()
+        return JsonResponse(drink_data)
     except requests.exceptions.RequestException as e:
-        print(f"Error fetching random taco: {e}")
-        return None
+        print(f"Error fetching random drink: {e}")
+        return JsonResponse({'error': 'Failed to fetch random drink'}, status=500)
 
-def get_mealme_data(city, taco_data):
+def get_mealme_data(city, drink_data):
     url = "https://api.mealme.ai/search/store/v3"
     
-    # Extract ingredients from taco_data
-    ingredients = []
-    for category, ingredient in taco_data.items():
-        if category in ['base_layer', 'mixin', 'condiment', 'seasoning', 'shell']:
-            ingredients.append(ingredient)
-    
+    # Extract drink name from drink_data
+    drink_name = drink_data['drinks'][0]['strDrink']
+
     # Prepare parameters for MealMe API
     params = {
         'user_city': city,
@@ -31,10 +27,13 @@ def get_mealme_data(city, taco_data):
         'sort': 'relevance',  # Default sorting criteria
         'use_new_db': 'true',  # Default database flag
         'search_focus': 'store',
-        'name': ' '.join(ingredients)  # Concatenate ingredients for name search
+        'name': drink_name  # Use drink name for name search
     }
 
-    headers = {"accept": "application/json"}
+    headers = {
+        "accept": "application/json",
+    "Authorization": f"Bearer {MEALME_API_KEY}"
+    }
 
     try:
         response = requests.get(url, params=params, headers=headers)
