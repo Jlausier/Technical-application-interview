@@ -1,9 +1,9 @@
-# urls.py
 
 from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('api/get_tacos/', views.get_tacos, name='get_tacos'),
-    path('api/get_meals/', views.get_meals, name='get_meals'),
+    path('get_random_taco/', views.get_random_taco, name='get_random_taco'),
+    path('get_mealme_data/', views.get_mealme_data, name='get_mealme_data'),
+    # Other paths...
 ]
