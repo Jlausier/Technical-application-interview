@@ -11,9 +11,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-9blfq&e%!k3tt90@&!8iu$e-4et9%slpg@!^7obs!je359!vm*')
 
 
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['your_domain.com', 'your_ec2_instance_ip']
+
+ALLOWED_HOSTS = ['localhost']
 
 # Application definition
 
