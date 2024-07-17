@@ -1,30 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import Drinks from './Components/Drinks'; 
-import Bars from './Components/Bars'; // Rename to Bars for clarity
+import Breweries from './Components/Breweries';
 import Footer from './Components/Footer';
 import axios from 'axios';
-import drinkImage from './Images/cocktails.jpg'; // Update path to drink image
+import drinkImage from './Images/cocktails.jpg';
 
 function App() {
   const [drinks, setDrinks] = useState([]);
-  const [bars, setBars] = useState([]); // Rename meals to bars for clarity
+  const [breweries, setBreweries] = useState([]);
   const [loading, setLoading] = useState(false);
   const [city, setCity] = useState('');
   const [showCityInput, setShowCityInput] = useState(false);
   const [fetchingDrink, setFetchingDrink] = useState(false);
-
-  useEffect(() => {
-    // No automatic fetch on component mount
-  }, []);
+  const [drinkFetched, setDrinkFetched] = useState(false);
+  const [citySearched, setCitySearched] = useState(false);
+  const [noBreweries, setNoBreweries] = useState(false);
 
   const fetchRandomDrinks = async () => {
     try {
       setFetchingDrink(true);
       setLoading(true);
-      const response = await axios.get('http://localhost:8000/api/get_random_drink/');
+      const response = await axios.get('http://localhost:8000/api/random_drink/');
       setDrinks([response.data.drinks[0]]);
       setShowCityInput(true); // Show city input after first drink is fetched
+      setDrinkFetched(true);
     } catch (error) {
       console.error('Error fetching drinks:', error);
     } finally {
@@ -33,21 +33,24 @@ function App() {
     }
   };
 
-  const fetchBarsByCity = async () => {
+  const fetchBreweriesByCity = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:8000/api/search_nearby_bars/${city}/`); // Correct endpoint
-      setDrinks(response.data.drink.drinks); // Get drinks data
-      setBars(response.data.bars); // Get nearby bars
+      const response = await axios.get(`http://localhost:8000/api/search_nearby_breweries/${city}/`);
+      const breweriesData = response.data.breweries;
+      setBreweries(response.data.breweries);
+      setCitySearched(true);
+      setNoBreweries(breweriesData.length === 0);
     } catch (error) {
-      console.error('Error searching bars:', error);
+      console.error('Error searching breweries:', error);
     } finally {
       setLoading(false);
     }
   };
+
   const handleCitySearch = async (e) => {
     e.preventDefault();
-    fetchBarsByCity();
+    fetchBreweriesByCity();
   };
 
   return (
@@ -103,18 +106,27 @@ function App() {
                         onChange={(e) => setCity(e.target.value)}
                       />
                       <div className="input-group-append">
-                        <button className="btn btn-outline-secondary" type="submit">Search Bars</button>
+                        <button className="btn btn-outline-secondary" type="submit">Search Breweries</button>
                       </div>
                     </div>
                   </form>
                 )}
               </div>
-            </div>
-            <div className="row">
-              <div className="col-md-12">
-                <Bars bars={bars} /> {/* Adjust component to use bars */}
               </div>
-            </div>
+              {citySearched && ( // Conditionally render the header and Breweries component
+              <div className="row">
+                <div className="col-md-12">
+                  {noBreweries ? (
+                    <h4>No nearby breweries found for the city "{city}".</h4>
+                  ) : (
+                    <>
+                      
+                      <Breweries breweries={breweries} />
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
           </>
         )}
       </div>
