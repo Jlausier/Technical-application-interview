@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+// App.js
+
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import Drinks from './Components/Drinks'; 
 import Breweries from './Components/Breweries';
@@ -13,18 +15,16 @@ function App() {
   const [city, setCity] = useState('');
   const [showCityInput, setShowCityInput] = useState(false);
   const [fetchingDrink, setFetchingDrink] = useState(false);
-  const [drinkFetched, setDrinkFetched] = useState(false);
-  const [citySearched, setCitySearched] = useState(false);
-  const [noBreweries, setNoBreweries] = useState(false);
+
+  useEffect(() => {}, []);
 
   const fetchRandomDrinks = async () => {
     try {
       setFetchingDrink(true);
       setLoading(true);
-      const response = await axios.get('http://localhost:8000/api/random_drink/');
+      const response = await axios.get('http://ec2-13-59-85-100.us-east-2.compute.amazonaws.com:8000/api/get_random_drink/');
       setDrinks([response.data.drinks[0]]);
-      setShowCityInput(true); // Show city input after first drink is fetched
-      setDrinkFetched(true);
+      setShowCityInput(true);
     } catch (error) {
       console.error('Error fetching drinks:', error);
     } finally {
@@ -36,11 +36,13 @@ function App() {
   const fetchBreweriesByCity = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:8000/api/search_nearby_breweries/${city}/`);
-      const breweriesData = response.data.breweries;
-      setBreweries(response.data.breweries);
-      setCitySearched(true);
-      setNoBreweries(breweriesData.length === 0);
+      const response = await axios.get(`http://ec2-13-59-85-100.us-east-2.compute.amazonaws.com:8000/api/search_nearby_breweries/${city}/`);
+      if (response.data.error) {
+        console.error(response.data.error);
+        setBreweries([]);
+      } else {
+        setBreweries(response.data.breweries);
+      }
     } catch (error) {
       console.error('Error searching breweries:', error);
     } finally {
@@ -54,16 +56,7 @@ function App() {
   };
 
   return (
-    <div className="App" style={{
-      background: 'linear-gradient(to bottom right, #333333, #444444, #6c00e0)',
-      minHeight: '100vh',
-      color: 'white',
-      paddingTop: '20px',
-      margin: 0,
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'space-between'
-    }}>
+    <div className="App" style={{ background: 'linear-gradient(to bottom right, #333333, #444444, #6c00e0)', minHeight: '100vh', color: 'white', paddingTop: '20px', margin: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
       <div className="container mt-4">
         <div className="row">
           <div className="col-md-6">
@@ -74,11 +67,7 @@ function App() {
             <p className="lead">
               Explore our refreshing selection of drinks. Click below to get a random drink recipe!
             </p>
-            <button
-              className="btn btn-primary mr-2"
-              onClick={fetchRandomDrinks}
-              disabled={fetchingDrink}
-            >
+            <button className="btn btn-primary mr-2" onClick={fetchRandomDrinks} disabled={fetchingDrink}>
               {fetchingDrink ? 'Fetching Drink...' : (drinks.length > 0 ? 'Get Another Random Drink' : 'Get Random Drink')}
             </button>
           </div>
@@ -98,13 +87,7 @@ function App() {
                 {showCityInput && (
                   <form onSubmit={handleCitySearch}>
                     <div className="input-group mb-3">
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Enter city..."
-                        value={city}
-                        onChange={(e) => setCity(e.target.value)}
-                      />
+                      <input type="text" className="form-control" placeholder="Enter city..." value={city} onChange={(e) => setCity(e.target.value)} />
                       <div className="input-group-append">
                         <button className="btn btn-outline-secondary" type="submit">Search Breweries</button>
                       </div>
@@ -112,21 +95,13 @@ function App() {
                   </form>
                 )}
               </div>
+            </div>
+            <div className="row">
+              <div className="col-md-12">
+                {city && breweries.length === 0 && !loading && <p>No breweries found in this city.</p>}
+                <Breweries breweries={breweries} />
               </div>
-              {citySearched && ( // Conditionally render the header and Breweries component
-              <div className="row">
-                <div className="col-md-12">
-                  {noBreweries ? (
-                    <h4>No nearby breweries found for the city "{city}".</h4>
-                  ) : (
-                    <>
-                      
-                      <Breweries breweries={breweries} />
-                    </>
-                  )}
-                </div>
-              </div>
-            )}
+            </div>
           </>
         )}
       </div>
