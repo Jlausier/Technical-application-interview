@@ -38,8 +38,8 @@ function App() {
     try {
       setLoading(true);
       const drinkName = drinks.length > 0 ? drinks[0].strDrink : '';
-      const response = await axios.get(`/api/search_meals/?city=${city}&drink=${drinkName}`);
-      setMeals(response.data);
+      const response = await axios.get(`http://localhost:8000/api/search_for_drink_place/${city}/`);
+      setMeals(response.data.places.results);
     } catch (error) {
       console.error('Error searching meals:', error);
     } finally {
@@ -69,7 +69,7 @@ function App() {
             <img src={drinkImage} alt="Drink" className="img-fluid rounded mb-4" style={{ height: '400px' }} />
           </div>
           <div className="col-md-6">
-            <h2 className="mb-4">Welcome to Random Drinks!</h2>
+            <h2 className="mb-4">Welcome to Drink Roulette!</h2>
             <p className="lead">
               Explore our refreshing selection of drinks. Click below to get a random drink recipe!
             </p>
@@ -112,6 +112,11 @@ function App() {
                     </div>
                   </form>
                 )}
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-md-12">
+                <Meals meals={meals} />
               </div>
             </div>
           </>

@@ -61,18 +61,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'recipe_backend.wsgi.application'
 
 
-# Database
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME', 'Drink_Roulette'),
-        'USER': os.environ.get('DB_USER', 'Jacob'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', 'Feyre+Aria'),
-        'HOST': os.environ.get('DB_HOST', 'localhost'),
-        'PORT': os.environ.get('DB_PORT', '5432'),
-    }
-}
 
 
 # Password validation

@@ -4,6 +4,5 @@ from . import views
 
 urlpatterns = [
     path('api/get_random_drink/', views.get_random_drink, name='get_random_drink'),
-    path('get_mealme_data/', views.get_mealme_data, name='get_mealme_data'),
-    # Other paths...
+     path('api/search_for_drink_place/<str:city>/', views.search_for_drink_place, name='search_for_drink_place'),
 ]

@@ -1,23 +1,25 @@
-// frontend/src/components/Meals.js
-
 import React from 'react';
 
-function Meals({ meals }) {
+const Meals = ({ meals }) => {
+  if (!meals || meals.length === 0) {
+    return <div>No places found</div>;
+  }
+
   return (
-    <div className="section">
-      <h2>Meals in City</h2>
-      <ul>
+    <div>
+      <h3>Restaurants and Bars</h3>
+      <ul className="list-group">
         {meals.map((meal, index) => (
-          <li key={index}>
-            <p><strong>Name:</strong> {meal.name}</p>
-            <p><strong>Address:</strong> {meal.address}</p>
-            <p><strong>Type:</strong> {meal.type}</p>
-            <p><strong>Is Open:</strong> {meal.is_open ? 'Yes' : 'No'}</p>
+          <li key={index} className="list-group-item">
+            <h5>{meal.name}</h5>
+            <p>{meal.location.formatted_address}</p>
+            <p>Category: {meal.categories[0]?.name}</p>
+            <p>Distance: {meal.distance} meters</p>
           </li>
         ))}
       </ul>
     </div>
   );
-}
+};
 
 export default Meals;

@@ -1,6 +1,5 @@
-
-from django.http import JsonResponse
 import requests
+from django.http import JsonResponse
 
 def get_random_drink(request):
     try:
@@ -13,26 +12,24 @@ def get_random_drink(request):
         print(f"Error fetching random drink: {e}")
         return JsonResponse({'error': 'Failed to fetch random drink'}, status=500)
 
-def get_mealme_data(city, drink_data):
-    url = "https://api.mealme.ai/search/store/v3"
+def get_foursquare_data(city, drink_data):
+    # Foursquare API endpoint for searching venues
+    url = "https://api.foursquare.com/v3/places/search"
     
     # Extract drink name from drink_data
     drink_name = drink_data['drinks'][0]['strDrink']
 
-    # Prepare parameters for MealMe API
+    # Prepare parameters for Foursquare API
     params = {
-        'user_city': city,
-        'store_type': 'restaurant',  # Default store type
-        'maximum_miles': '3',  # Default maximum distance
-        'sort': 'relevance',  # Default sorting criteria
-        'use_new_db': 'true',  # Default database flag
-        'search_focus': 'store',
-        'name': drink_name  # Use drink name for name search
+        'near': city,
+        'query': drink_name,
+        'categories': '13035,13040',  # Category IDs for bars and restaurants
+        'limit': 10  # Limit the number of results
     }
 
     headers = {
         "accept": "application/json",
-    "Authorization": f"Bearer {MEALME_API_KEY}"
+        "Authorization": "fsq3ocgotiMEtwwS/d1mmPjGLh995Lu2pnlh7yXx42D+R4E="  
     }
 
     try:
@@ -40,4 +37,20 @@ def get_mealme_data(city, drink_data):
         response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:
+        print(f"Error fetching Foursquare data: {e}")
         return {'error': str(e)}
+
+
+def search_for_drink_place(request, city):
+    drink_data = get_random_drink(request)
+    if 'error' in drink_data:
+        return JsonResponse({'error': 'Failed to fetch random drink'}, status=500)
+    
+    foursquare_data = get_foursquare_data(city, drink_data)
+    if 'error' in foursquare_data:
+        return JsonResponse({'error': 'Failed to fetch places data'}, status=500)
+    
+    return JsonResponse({
+        'drink': drink_data,
+        'places': foursquare_data
+    })
