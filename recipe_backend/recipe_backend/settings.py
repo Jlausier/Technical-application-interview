@@ -134,3 +134,13 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny',
     ],
 }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'drinks_google',
+        'USER': 'jacob',
+        'PASSWORD': '1234',
+        'HOST': 'localhost',  # Set to 'localhost'
+        'PORT': '5432',       # Default PostgreSQL port
+    }
+}

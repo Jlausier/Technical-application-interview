@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-
-import Drinks from './Components/Drinks'; // Assuming you have a Drinks component
-import Meals from './Components/Meals';
+import Drinks from './Components/Drinks'; 
+import Bars from './Components/Bars'; // Rename to Bars for clarity
 import Footer from './Components/Footer';
 import axios from 'axios';
 import drinkImage from './Images/cocktails.jpg'; // Update path to drink image
 
 function App() {
   const [drinks, setDrinks] = useState([]);
-  const [meals, setMeals] = useState([]);
-  const [loading, setLoading] = useState(false); // Initial loading state set to false
+  const [bars, setBars] = useState([]); // Rename meals to bars for clarity
+  const [loading, setLoading] = useState(false);
   const [city, setCity] = useState('');
   const [showCityInput, setShowCityInput] = useState(false);
-  const [fetchingDrink, setFetchingDrink] = useState(false); // State to track if a drink is being fetched
+  const [fetchingDrink, setFetchingDrink] = useState(false);
 
   useEffect(() => {
     // No automatic fetch on component mount
@@ -21,35 +20,34 @@ function App() {
 
   const fetchRandomDrinks = async () => {
     try {
-      setFetchingDrink(true); // Set fetching state to true
-      setLoading(true); // Set loading state to true
+      setFetchingDrink(true);
+      setLoading(true);
       const response = await axios.get('http://localhost:8000/api/get_random_drink/');
       setDrinks([response.data.drinks[0]]);
       setShowCityInput(true); // Show city input after first drink is fetched
     } catch (error) {
       console.error('Error fetching drinks:', error);
     } finally {
-      setLoading(false); // Always set loading state to false
-      setFetchingDrink(false); // Reset fetching state after fetch is complete
+      setLoading(false);
+      setFetchingDrink(false);
     }
   };
 
-  const fetchMealsByCity = async () => {
+  const fetchBarsByCity = async () => {
     try {
       setLoading(true);
-      const drinkName = drinks.length > 0 ? drinks[0].strDrink : '';
-      const response = await axios.get(`http://localhost:8000/api/search_for_drink_place/${city}/`);
-      setMeals(response.data.places.results);
+      const response = await axios.get(`http://localhost:8000/api/search_nearby_bars/${city}/`); // Correct endpoint
+      setDrinks(response.data.drink.drinks); // Get drinks data
+      setBars(response.data.bars); // Get nearby bars
     } catch (error) {
-      console.error('Error searching meals:', error);
+      console.error('Error searching bars:', error);
     } finally {
       setLoading(false);
     }
   };
-
   const handleCitySearch = async (e) => {
     e.preventDefault();
-    fetchMealsByCity();
+    fetchBarsByCity();
   };
 
   return (
@@ -75,10 +73,8 @@ function App() {
             </p>
             <button
               className="btn btn-primary mr-2"
-              onClick={() => {
-                fetchRandomDrinks();
-              }}
-              disabled={fetchingDrink} // Disable button while fetching
+              onClick={fetchRandomDrinks}
+              disabled={fetchingDrink}
             >
               {fetchingDrink ? 'Fetching Drink...' : (drinks.length > 0 ? 'Get Another Random Drink' : 'Get Random Drink')}
             </button>
@@ -107,7 +103,7 @@ function App() {
                         onChange={(e) => setCity(e.target.value)}
                       />
                       <div className="input-group-append">
-                        <button className="btn btn-outline-secondary" type="submit">Search Restaurants</button>
+                        <button className="btn btn-outline-secondary" type="submit">Search Bars</button>
                       </div>
                     </div>
                   </form>
@@ -116,7 +112,7 @@ function App() {
             </div>
             <div className="row">
               <div className="col-md-12">
-                <Meals meals={meals} />
+                <Bars bars={bars} /> {/* Adjust component to use bars */}
               </div>
             </div>
           </>

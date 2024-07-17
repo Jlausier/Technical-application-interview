@@ -1,8 +1,7 @@
-
 from django.urls import path
-from . import views
+from .views import get_random_drink, search_nearby_bars
 
 urlpatterns = [
-    path('api/get_random_drink/', views.get_random_drink, name='get_random_drink'),
-     path('api/search_for_drink_place/<str:city>/', views.search_for_drink_place, name='search_for_drink_place'),
+    path('api/get_random_drink/', get_random_drink, name='get_random_drink'),
+    path('api/search_nearby_bars/<str:city>/', search_nearby_bars, name='search_nearby_bars'),
 ]
