@@ -22,7 +22,7 @@ function App() {
     try {
       setFetchingDrink(true);
       setLoading(true);
-      const response = await axios.get('https://d12bav0dgqcek3.cloudfront.net/api/random_drink/');
+      const response = await axios.get('http://ec2-13-59-85-100.us-east-2.compute.amazonaws.com:8000/api/random_drink/');
       setDrinks([response.data.drinks[0]]);
       setShowCityInput(true);
     } catch (error) {
@@ -36,7 +36,7 @@ function App() {
   const fetchBreweriesByCity = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`https://d12bav0dgqcek3.cloudfront.net/api/search_nearby_breweries/${city}/`);
+      const response = await axios.get(`http://ec2-13-59-85-100.us-east-2.compute.amazonaws.com:8000/api/search_nearby_breweries/${city}/`);
       if (response.data.error) {
         console.error(response.data.error);
         setBreweries([]);
