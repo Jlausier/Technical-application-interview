@@ -13,7 +13,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-9blfq&e%!k3tt90@&!8iu
 
 
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['localhost', 'd12bav0dgqcek3.cloudfront.net', 'your-domain.com']
 
 # Application definition
 
